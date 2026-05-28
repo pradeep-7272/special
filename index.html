@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Happy Birthday Payal 🎂</title>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Quicksand:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue1: #dff0fc;
+    --blue2: #b8dcf5;
+    --blue3: #7dbfe8;
+    --blue4: #4a9fd4;
+    --blue5: #2176ae;
+    --pink: #f7c5d5;
+    --rose: #e8809a;
+    --white: #ffffff;
+    --soft: #f0f8ff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    font-family: 'Quicksand', sans-serif;
+    background: var(--blue1);
+    user-select: none;
+  }
+
+  /* ── PAGE SYSTEM ── */
+  .pages { width: 100%; height: 100vh; position: relative; }
+
+  .page {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.8s ease, transform 0.8s ease;
+    transform: translateY(30px);
+    cursor: pointer;
+  }
+  .page.active {
+    opacity: 1; pointer-events: all;
+    transform: translateY(0);
+  }
+  .page.exit {
+    opacity: 0;
+    transform: translateY(-30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  /* tap hint */
+  .tap-hint {
+    position: absolute; bottom: 88px;
+    left: 50%; transform: translateX(-50%);
+    white-space: nowrap;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 11px; font-weight: 600;
+    color: white;
+    letter-spacing: 2px; text-transform: uppercase;
+    background: rgba(33,118,174,0.55);
+    padding: 7px 18px; border-radius: 30px;
+    backdrop-filter: blur(4px);
+    z-index: 10;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:0.7} 50%{opacity:1} }
+
+  /* ── PROGRESS DOTS ── */
+  .dots {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 7px; z-index: 100;
+  }
+  .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--blue3); transition: background 0.4s, transform 0.4s;
+  }
+  .dot.active { background: var(--blue5); transform: scale(1.4); }
+
+  /* ── SHARED CANVAS BG ── */
+  canvas.bg { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+
+  /* ── PAGE 1: ENVELOPE REVEAL ── */
+  #p1 { background: linear-gradient(160deg, #e8f5fd 0%, #d0ebf9 50%, #b8dcf5 100%); }
+
+  .envelope-wrap {
+    position: relative; z-index: 2;
+    display: flex; flex-direction: column; align-items: center;
+  }
+
+  .envelope {
+    width: 200px; height: 140px; position: relative;
+    animation: floatEnv 3s ease-in-out infinite;
+  }
+  @keyframes floatEnv { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+
+  .env-body {
+    width: 200px; height: 140px;
+    background: linear-gradient(160deg, #d6eef9, #c2e2f4);
+    border-radius: 4px 4px 10px 10px;
+    box-shadow: 0 8px 32px rgba(33,118,174,0.18);
+    position: relative; overflow: visible;
+  }
+  .env-flap {
+    position: absolute; top: -1px; left: 0;
+    width: 0; height: 0;
+    border-left: 100px solid transparent;
+    border-right: 100px solid transparent;
+    border-top: 72px solid #b8dcf5;
+    z-index: 2;
+    transform-origin: top center;
+    animation: openFlap 1.8s 0.6s ease forwards;
+  }
+  @keyframes openFlap {
+    0%   { transform: rotateX(0deg); }
+    100% { transform: rotateX(-150deg); }
+  }
+  .env-left {
+    position: absolute; bottom: 0; left: 0;
+    width: 0; height: 0;
+    border-left: 70px solid #a8d4ee;
+    border-top: 70px solid transparent;
+    border-bottom: 70px solid transparent;
+  }
+  .env-right {
+    position: absolute; bottom: 0; right: 0;
+    width: 0; height: 0;
+    border-right: 70px solid #a8d4ee;
+    border-top: 70px solid transparent;
+    border-bottom: 70px solid transparent;
+  }
+  .env-bottom {
+    position: absolute; bottom: 0; left: 0;
+    width: 0; height: 0;
+    border-bottom: 90px solid #c0dff0;
+    border-left: 100px solid transparent;
+    border-right: 100px solid transparent;
+  }
+  .letter-peek {
+    position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+    width: 160px; background: white;
+    border-radius: 6px; padding: 10px 12px;
+    box-shadow: 0 2px 12px rgba(33,118,174,0.15);
+    font-size: 12px; color: var(--blue5); text-align: center;
+    animation: peekUp 1s 1.4s ease forwards;
+    opacity: 0; transform: translateX(-50%) translateY(20px);
+    z-index: 1;
+  }
+  @keyframes peekUp {
+    to { opacity: 1; transform: translateX(-50%) translateY(-20px); }
+  }
+  .letter-peek .heart { color: var(--rose); font-size: 16px; }
+
+  .env-title {
+    font-family: 'Great Vibes', cursive;
+    font-size: 38px; color: var(--blue5);
+    margin-top: 28px;
+    text-shadow: 0 2px 12px rgba(33,118,174,0.15);
+    animation: fadeUp 1s 2s ease forwards; opacity: 0; transform: translateY(16px);
+  }
+  @keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
+
+  .env-sub {
+    font-size: 13px; color: var(--blue4); margin-top: 8px; letter-spacing: 2px;
+    text-transform: uppercase; opacity: 0;
+    animation: fadeUp 1s 2.4s ease forwards;
+  }
+
+  /* ── PAGE 2: BIRTHDAY REVEAL ── */
+  #p2 { background: linear-gradient(135deg, #dff0fc 0%, #f7e8f0 100%); }
+
+  .age-wrap {
+    text-align: center; z-index: 2; position: relative;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 0 24px; gap: 0;
+  }
+
+  /* line-by-line unwrap keyframes */
+  @keyframes unwrap {
+    from { opacity: 0; transform: translateY(22px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes popIn {
+    from { transform: scale(0.3) rotate(-8deg); opacity: 0; }
+    to   { transform: scale(1) rotate(0); opacity: 1; }
+  }
+
+  /* All page-2 reveal elements start invisible */
+  .bday-line1, .bday-line2, .bday-divider,
+  .bday-subtitle, .age-number, .age-tagline, .cake-row {
+    opacity: 0;
+  }
+
+  /* Triggered by JS adding .reveal with a custom --d delay */
+  .bday-line1.reveal, .bday-line2.reveal, .bday-divider.reveal,
+  .bday-subtitle.reveal, .age-tagline.reveal, .cake-row.reveal {
+    animation: unwrap 0.7s cubic-bezier(0.22,1,0.36,1) var(--d, 0s) forwards;
+  }
+  .age-number.reveal {
+    animation: popIn 0.85s cubic-bezier(0.34,1.56,0.64,1) var(--d, 0s) forwards;
+  }
+
+  /* "Happy Birthday" line 1 */
+  .bday-line1 {
+    font-family: 'Great Vibes', cursive;
+    font-size: 48px; line-height: 1.15;
+    color: var(--blue5);
+    text-shadow: 0 2px 12px rgba(33,118,174,0.15);
+  }
+
+  /* "Payal" — own line, bigger, rose pink */
+  .bday-line2 {
+    font-family: 'Great Vibes', cursive;
+    font-size: 66px; line-height: 1.05;
+    color: var(--rose);
+    text-shadow: 0 3px 16px rgba(232,128,154,0.25);
+    margin-top: -4px;
+  }
+
+  /* divider sparkle */
+  .bday-divider {
+    font-size: 15px; letter-spacing: 8px; color: var(--blue3);
+    margin: 4px 0 2px;
+  }
+
+  /* "wishing you the most wonderful" */
+  .bday-subtitle {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 12.5px; color: var(--blue4);
+    letter-spacing: 1.2px; font-weight: 500; font-style: italic;
+  }
+
+  /* BIG 18 — bold serif number */
+  .age-number {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 108px; line-height: 1; font-weight: 700;
+    background: linear-gradient(150deg, #2176ae 0%, #e8809a 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 4px 18px rgba(33,118,174,0.22));
+    margin-top: 2px;
+  }
+
+  /* tagline */
+  .age-tagline {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 12px; color: #a06080;
+    letter-spacing: 0.8px; font-weight: 500; font-style: italic;
+    margin-top: 3px;
+  }
+
+  /* Cake */
+  .cake-row {
+    display: flex; gap: 12px; margin-top: 14px; justify-content: center;
+  }
+  .cake-svg { width: 96px; height: 120px; }
+
+  /* ── PAGE 3: WISHES ── */
+  #p3 { background: linear-gradient(160deg, #d4ecf9, #fce4ef); }
+
+  .wish-wrap { z-index: 2; position: relative; text-align: center; padding: 0 28px; max-width: 360px; }
+
+  .wish-icon { font-size: 48px; animation: swingIcon 2s ease-in-out infinite; display: block; margin-bottom: 12px; }
+  @keyframes swingIcon { 0%,100%{transform:rotate(-8deg)} 50%{transform:rotate(8deg)} }
+
+  .wish-title {
+    font-family: 'Great Vibes', cursive;
+    font-size: 36px; color: var(--blue5);
+    animation: fadeUp 0.8s 0.3s ease both;
+  }
+
+  .wish-subtitle {
+    font-family: 'Great Vibes', cursive;
+    font-size: 26px; color: var(--rose);
+    margin-top: -2px; margin-bottom: 2px;
+    animation: fadeUp 0.8s 0.5s ease both;
+  }
+
+  .wish-text {
+    font-size: 13px; color: #4a7fa0; line-height: 1.75; margin-top: 10px;
+    animation: fadeUp 0.8s 0.7s ease both;
+  }
+
+  .wish-hearts {
+    display: flex; gap: 8px; justify-content: center; margin-top: 18px;
+    animation: fadeUp 0.8s 1.1s ease both;
+  }
+  .wh { font-size: 22px; animation: heartBeat 1.2s ease-in-out infinite; }
+  .wh:nth-child(2){ animation-delay:0.2s; }
+  .wh:nth-child(3){ animation-delay:0.4s; }
+  .wh:nth-child(4){ animation-delay:0.6s; }
+  .wh:nth-child(5){ animation-delay:0.8s; }
+  @keyframes heartBeat { 0%,100%{transform:scale(1)} 50%{transform:scale(1.35)} }
+
+
+
+  /* ── PAGE 5: FINAL ── */
+  #p5 { background: linear-gradient(160deg, #b8dcf5 0%, #fce4ef 100%); }
+
+  .final-wrap { z-index: 2; position: relative; text-align: center; padding: 0 24px; }
+
+  .big-heart {
+    font-size: 72px;
+    animation: bigPulse 1.5s ease-in-out infinite;
+    display: block; margin-bottom: 10px;
+  }
+  @keyframes bigPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.18)} }
+
+  .final-title {
+    font-family: 'Great Vibes', cursive;
+    font-size: 48px; color: var(--blue5);
+    animation: fadeUp 0.8s 0.3s ease both;
+  }
+
+  .final-msg {
+    font-size: 14px; color: #5a8aa8; line-height: 1.9; margin-top: 14px;
+    animation: fadeUp 0.8s 0.7s ease both;
+    max-width: 300px; margin-left: auto; margin-right: auto;
+  }
+
+  .final-sig {
+    font-family: 'Great Vibes', cursive;
+    font-size: 28px; color: var(--rose); margin-top: 18px;
+    animation: fadeUp 0.8s 1.1s ease both;
+  }
+
+  .sparkles {
+    display: flex; gap: 10px; justify-content: center; margin-top: 16px;
+    animation: fadeUp 0.8s 1.4s ease both;
+  }
+  .sp { font-size: 24px; animation: twinkle 1.5s ease-in-out infinite; }
+  .sp:nth-child(2){ animation-delay:0.25s; }
+  .sp:nth-child(3){ animation-delay:0.5s; }
+  .sp:nth-child(4){ animation-delay:0.75s; }
+  .sp:nth-child(5){ animation-delay:1s; }
+  @keyframes twinkle { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+
+  /* ── NAV BUTTONS ── */
+  .nav-btn {
+    display: none;
+    margin: 22px auto 0;
+    white-space: nowrap;
+    padding: 13px 40px; border-radius: 50px; border: none; cursor: pointer;
+    font-family: 'Quicksand', sans-serif; font-size: 13px; font-weight: 600;
+    letter-spacing: 1.5px; text-transform: uppercase; z-index: 20;
+    background: linear-gradient(135deg, var(--blue4), var(--rose));
+    color: white; box-shadow: 0 4px 18px rgba(33,118,174,0.3);
+    animation: fadeUp 0.8s 1.6s ease both;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .nav-btn:active { transform: scale(0.95); box-shadow: 0 2px 8px rgba(33,118,174,0.2); }
+
+  .restart-btn {
+    display: none;
+    margin: 22px auto 0;
+    white-space: nowrap;
+    padding: 13px 40px; border-radius: 50px; border: 2px solid var(--blue4); cursor: pointer;
+    font-family: 'Quicksand', sans-serif; font-size: 13px; font-weight: 600;
+    letter-spacing: 1.5px; text-transform: uppercase; z-index: 20;
+    background: white; color: var(--blue5);
+    box-shadow: 0 4px 18px rgba(33,118,174,0.15);
+    animation: fadeUp 0.8s 1.8s ease both;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .restart-btn:active { transform: scale(0.95); }
+
+  /* Push content up on pages with buttons */
+  #p5 .final-wrap,
+  #p5-msg .final-wrap { margin-bottom: 0; }
+  #particle-canvas { position:fixed; inset:0; pointer-events:none; z-index:1; }
+
+  /* ── PAGE 5 LETTER ── */
+  #p5-msg { background: linear-gradient(160deg, #dff0fc, #fce4ef); }
+
+  .msg-page-inner {
+    width: 100%; max-width: 400px;
+    margin: 0 auto;
+    display: flex; flex-direction: column; align-items: center;
+    animation: fadeUp 0.8s 0.2s ease both; opacity: 0;
+  }
+
+  .msg-page-title {
+    font-family: 'Great Vibes', cursive;
+    font-size: 40px; color: var(--blue5);
+    text-align: center; line-height: 1.2;
+    margin-bottom: 18px;
+    text-shadow: 0 2px 10px rgba(33,118,174,0.15);
+  }
+
+  .letter-box {
+    width: 100%;
+    background: rgba(255,255,255,0.82);
+    backdrop-filter: blur(8px);
+    border-radius: 20px;
+    padding: 22px 22px 18px;
+    box-shadow: 0 8px 32px rgba(33,118,174,0.13), 0 1px 4px rgba(232,128,154,0.1);
+    border: 1px solid rgba(184,220,245,0.5);
+  }
+
+  .letter-box p {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 14px; color: #3a6a8a;
+    line-height: 1.75; margin-bottom: 14px;
+    font-weight: 500; font-style: italic;
+  }
+  .letter-box p:last-of-type { margin-bottom: 0; }
+
+  .letter-sign {
+    font-family: 'Great Vibes', cursive;
+    font-size: 28px; color: var(--rose);
+    text-align: right; margin-top: 16px;
+  }
+
+  /* ── RIPPLE on tap ── */
+  .ripple {
+    position: fixed; border-radius: 50%;
+    background: rgba(74,159,212,0.25);
+    transform: scale(0); pointer-events: none;
+    animation: rippleOut 0.6s ease-out forwards;
+    z-index: 200;
+  }
+  @keyframes rippleOut { to { transform:scale(4); opacity:0; } }
+
+</style>
+</head>
+<body>
+
+<canvas id="particle-canvas"></canvas>
+
+<!-- DOTS -->
+<div class="dots" id="dots"></div>
+
+<div class="pages" id="pages">
+
+  <!-- PAGE 1 -->
+  <div class="page active" id="p1">
+    <div class="envelope-wrap">
+      <div class="envelope">
+        <div class="env-body">
+          <div class="env-flap"></div>
+          <div class="env-left"></div>
+          <div class="env-right"></div>
+          <div class="env-bottom"></div>
+          <div class="letter-peek">
+            <span class="heart">💌</span><br>
+            A little something<br>just for you…
+          </div>
+        </div>
+      </div>
+      <div class="env-title">Pau…</div>
+      <div class="env-sub">Something special awaits</div>
+    </div>
+    <div class="tap-hint">✦ tap anywhere ✦</div>
+  </div>
+
+  <!-- PAGE 2 -->
+  <div class="page" id="p2">
+    <div class="age-wrap">
+      <div class="bday-line1">Happy Birthday</div>
+      <div class="bday-line2">Payal</div>
+      <div class="bday-divider">✦ ✦ ✦</div>
+      <div class="bday-subtitle">wishing you the most wonderful</div>
+      <div class="age-number">18</div>
+      <div class="age-tagline">to the most precious girl i ever known</div>
+      <div class="cake-row">
+        <!-- Bigger animated cake SVG -->
+        <svg class="cake-svg" viewBox="0 0 100 126" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Candle 1 -->
+          <ellipse cx="30" cy="12" rx="6" ry="9" fill="#FFD700" opacity="0.92">
+            <animate attributeName="ry" values="9;11;9" dur="0.65s" repeatCount="indefinite"/>
+            <animate attributeName="cx" values="30;31;30;29;30" dur="0.45s" repeatCount="indefinite"/>
+          </ellipse>
+          <ellipse cx="30" cy="14" rx="3.5" ry="5.5" fill="#FFA500">
+            <animate attributeName="cy" values="14;13;14;15;14" dur="0.45s" repeatCount="indefinite"/>
+          </ellipse>
+          <rect x="26" y="20" width="8" height="20" rx="3" fill="#f7c5d5"/>
+
+          <!-- Candle 2 -->
+          <ellipse cx="50" cy="8" rx="6" ry="9" fill="#FFD700" opacity="0.92">
+            <animate attributeName="ry" values="9;12;9" dur="0.7s" repeatCount="indefinite"/>
+            <animate attributeName="cx" values="50;51;50;49;50" dur="0.5s" repeatCount="indefinite"/>
+          </ellipse>
+          <ellipse cx="50" cy="10" rx="3.5" ry="5.5" fill="#FFA500">
+            <animate attributeName="cy" values="10;9;10;11;10" dur="0.5s" repeatCount="indefinite"/>
+          </ellipse>
+          <rect x="46" y="16" width="8" height="24" rx="3" fill="#b8dcf5"/>
+
+          <!-- Candle 3 -->
+          <ellipse cx="70" cy="12" rx="6" ry="9" fill="#FFD700" opacity="0.92">
+            <animate attributeName="ry" values="9;11;9" dur="0.6s" repeatCount="indefinite"/>
+            <animate attributeName="cx" values="70;71;70;69;70" dur="0.4s" repeatCount="indefinite"/>
+          </ellipse>
+          <ellipse cx="70" cy="14" rx="3.5" ry="5.5" fill="#FFA500">
+            <animate attributeName="cy" values="14;13;14;15;14" dur="0.4s" repeatCount="indefinite"/>
+          </ellipse>
+          <rect x="66" y="20" width="8" height="20" rx="3" fill="#f7c5d5"/>
+
+          <!-- Top tier -->
+          <rect x="18" y="40" width="64" height="28" rx="8" fill="#b8dcf5"/>
+          <!-- Top frosting drip -->
+          <path d="M18 40 Q26 32 34 40 Q42 32 50 40 Q58 32 66 40 Q74 32 82 40" stroke="white" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+          <!-- Bottom tier -->
+          <rect x="6" y="66" width="88" height="32" rx="10" fill="#7dbfe8"/>
+          <!-- Bottom frosting drip -->
+          <path d="M6 66 Q17 57 28 66 Q39 57 50 66 Q61 57 72 66 Q83 57 94 66" stroke="white" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+          <!-- Decorations top tier -->
+          <text x="30" y="60" font-size="13" fill="#e8809a">♥</text>
+          <text x="52" y="60" font-size="13" fill="#e8809a">♥</text>
+
+          <!-- Decorations bottom tier -->
+          <text x="14" y="88" font-size="12" fill="white">♥</text>
+          <text x="34" y="88" font-size="12" fill="white">♥</text>
+          <text x="54" y="88" font-size="12" fill="white">♥</text>
+          <text x="74" y="88" font-size="12" fill="white">♥</text>
+
+          <!-- Plate -->
+          <ellipse cx="50" cy="98" rx="48" ry="6" fill="#d0ebf9"/>
+        </svg>
+      </div>
+    </div>
+    <div class="tap-hint">✦ tap to continue ✦</div>
+  </div>
+
+  <!-- PAGE 3 -->
+  <div class="page" id="p3">
+    <div class="wish-wrap">
+      <span class="wish-icon">🎀</span>
+      <div class="wish-title">Happy Birthday, Pau!</div>
+      <div class="wish-subtitle">to the sweetest girl</div>
+      <div class="wish-text">
+        May your smile always shine brighter than the stars ✨<br><br>
+        You deserve all the love, happiness, and little beautiful moments in life 🌸<br><br>
+        Keep being the cute, kind, and amazing person you are 💫<br><br>
+        Hope your day is filled with laughter, cake, and endless joy 🎂<br><br>
+        Stay happy always and keep making hearts smile 😊
+      </div>
+      <div class="wish-hearts">
+        <span class="wh">💙</span>
+        <span class="wh">💗</span>
+        <span class="wh">💙</span>
+        <span class="wh">💗</span>
+        <span class="wh">💙</span>
+      </div>
+    </div>
+    <div class="tap-hint">✦ tap to continue ✦</div>
+  </div>
+
+
+  <div class="page" id="p5">
+    <div class="final-wrap">
+      <span class="big-heart">❤️</span>
+      <div class="final-title">Forever & Always</div>
+      <div class="final-msg">
+        No matter the miles between us,<br>
+        I'm always with you.<br><br>
+        Wishing you a birthday filled<br>
+        with all the joy you deserve.<br><br>
+        <strong>May 29th is the most beautiful<br>day ever, because it's yours.</strong>
+      </div>
+      <div class="final-sig">Pau 💙</div>
+      <div class="sparkles">
+        <span class="sp">✨</span>
+        <span class="sp">🌟</span>
+        <span class="sp">💫</span>
+        <span class="sp">🌟</span>
+        <span class="sp">✨</span>
+      </div>
+      <button class="nav-btn" id="to-p5-btn">✉ A Message for You</button>
+    </div>
+  </div>
+
+  <!-- PAGE 5: MESSAGE -->
+  <div class="page" id="p5-msg" style="overflow-y: auto; justify-content: flex-start; padding: 28px 20px 80px;">
+    <div class="msg-page-inner">
+      <div class="msg-page-title">A Message<br>for You 💌</div>
+      <div class="letter-box">
+        <p>May 9, The day you entered my life.</p>
+        <p>And I thank God for bringing up<br>that day and you.. 🙂</p>
+        <p>Hume jyada din nahi hue par phir bhi<br>aapse vho magical bond ban gaya jo<br>saalo-saal ki dosti mai bhi nahi<br>ban pata..... 🥰🫂</p>
+        <p>Haa.... kuch chize hamare favor mai<br>nahi thi... par na hi hamare against... 😌</p>
+        <p>Apka ruthna... mera manana...<br>ye cute-pookie se nakhre... 🎀😊</p>
+        <p>Ye sab kab life ka part ban gaye..<br>pata hi nahi chala.. 😅</p>
+        <p>Aur aaj sabse special day.. May 29,<br>Jab ek purest soul was born... ✨✨</p>
+        <p>I wish you a very Happy Birthday and<br>may God bless his favorite child.. 😀</p>
+        <p>Always be happy and enjoy every<br>moment of your life.. 🫡</p>
+        <p>Always remember at any point<br>of your life I'm with you and,<br>I'll be there for you.. 😊</p>
+        <p>I'm very grateful to have you<br>as a person in my life... 🎀🥰</p>
+        <p>Stay hydrated.. 💪</p>
+        <div class="letter-sign">— chikuu</div>
+      </div>
+      <button class="restart-btn" id="restart-btn" style="display:none; position:relative; bottom:auto; left:auto; transform:none; margin: 18px auto 40px;">↺ Reopen</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ── PAGE MANAGEMENT ──
+  const totalPages = 5;
+  let current = 0;
+  let transitioning = false;
+
+  const pages = Array.from(document.querySelectorAll('.page'));
+  const dotsEl = document.getElementById('dots');
+
+  // Build dots
+  for (let i = 0; i < totalPages; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    dotsEl.appendChild(d);
+  }
+  const dotEls = document.querySelectorAll('.dot');
+
+  const navBtn     = document.getElementById('to-p5-btn');
+  const restartBtn = document.getElementById('restart-btn');
+
+  function updateButtons(index) {
+    navBtn.style.display     = (index === 3) ? 'inline-block' : 'none';
+    restartBtn.style.display = (index === 4) ? 'inline-block' : 'none';
+    // Also reset page 5 scroll to top when revisited
+    if (index === 4) {
+      const p5 = document.getElementById('p5-msg');
+      p5.scrollTop = 0;
+      // Restart inner animation
+      const inner = p5.querySelector('.msg-page-inner');
+      inner.style.animation = 'none';
+      void inner.offsetWidth;
+      inner.style.animation = '';
+    }
+  }
+
+  function goToPage(index) {
+    if (transitioning) return;
+    if (index < 0 || index >= totalPages) return;
+    transitioning = true;
+
+    pages[current].classList.add('exit');
+    pages[current].classList.remove('active');
+    dotEls[current].classList.remove('active');
+
+    const prev = current;
+    current = index;
+    pages[current].classList.add('active');
+    dotEls[current].classList.add('active');
+
+    if (current === 1) triggerPage2Reveal();
+    updateButtons(current);
+    // Apply 3s lock on first 3 pages
+    if (current <= 2) lockTapFor3s();
+
+    setTimeout(() => {
+      pages[prev].classList.remove('exit');
+      transitioning = false;
+    }, 700);
+  }
+
+  // Tap lock — first 3 pages block taps for 3s on arrival
+  let tapLocked = false;
+
+  function lockTapFor3s() {
+    tapLocked = true;
+    // Grey out hint while locked
+    const hint = pages[current].querySelector('.tap-hint');
+    if (hint) hint.style.opacity = '0.25';
+    setTimeout(() => {
+      tapLocked = false;
+      const h = pages[current].querySelector('.tap-hint');
+      if (h) h.style.opacity = '';
+    }, 3000);
+  }
+
+  // Lock on page load for page 1
+  lockTapFor3s();
+
+  function goNext() {
+    if (tapLocked) return;
+    // Pages 0–2 advance on tap; pages 3–4 use buttons only
+    if (current >= 3) return;
+    goToPage(current + 1);
+  }
+
+  // Button wiring — stop propagation so they don't also trigger goNext
+  navBtn.addEventListener('click', (e) => { e.stopPropagation(); goToPage(4); });
+  navBtn.addEventListener('touchend', (e) => { e.stopPropagation(); goToPage(4); });
+  restartBtn.addEventListener('click', (e) => { e.stopPropagation(); goToPage(0); });
+  restartBtn.addEventListener('touchend', (e) => { e.stopPropagation(); goToPage(0); });
+
+  function triggerPage2Reveal() {
+    // Elements in reveal order with delays (ms)
+    const items = [
+      { sel: '.bday-line1',   delay: 200 },
+      { sel: '.bday-line2',   delay: 700 },
+      { sel: '.bday-divider', delay: 1150 },
+      { sel: '.bday-subtitle',delay: 1500 },
+      { sel: '.age-number',   delay: 1900 },
+      { sel: '.age-tagline',  delay: 2700 },
+      { sel: '.cake-row',     delay: 3150 },
+    ];
+    // Reset all first
+    items.forEach(({ sel }) => {
+      const el = document.querySelector(sel);
+      el.classList.remove('reveal');
+      el.style.opacity = '0';
+      // Force reflow so removal registers
+      void el.offsetWidth;
+    });
+    // Stagger each in
+    items.forEach(({ sel, delay }) => {
+      setTimeout(() => {
+        const el = document.querySelector(sel);
+        el.style.setProperty('--d', '0s');
+        el.classList.add('reveal');
+      }, delay);
+    });
+  }
+
+  document.addEventListener('click', (e) => {
+    rippleEffect(e.clientX, e.clientY);
+    goNext();
+  });
+  document.addEventListener('touchend', (e) => {
+    const t = e.changedTouches[0];
+    rippleEffect(t.clientX, t.clientY);
+    goNext();
+  });
+
+  // ── RIPPLE ──
+  function rippleEffect(x, y) {
+    const el = document.createElement('div');
+    el.className = 'ripple';
+    const size = 80;
+    el.style.cssText = `width:${size}px;height:${size}px;left:${x - size/2}px;top:${y - size/2}px;`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 700);
+  }
+
+  // ── PARTICLE CANVAS ──
+  const canvas = document.getElementById('particle-canvas');
+  const ctx = canvas.getContext('2d');
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const emojis = ['💙','🌸','✨','💗','🌼','⭐','💫','🌷','❄️'];
+  const particles = [];
+
+  for (let i = 0; i < 26; i++) {
+    particles.push({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      emoji: emojis[Math.floor(Math.random() * emojis.length)],
+      size: 10 + Math.random() * 14,
+      vx: (Math.random() - 0.5) * 0.5,
+      vy: -0.3 - Math.random() * 0.5,
+      opacity: 0.15 + Math.random() * 0.35,
+      rot: Math.random() * Math.PI * 2,
+      rotV: (Math.random() - 0.5) * 0.02,
+    });
+  }
+
+  function drawParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      ctx.save();
+      ctx.globalAlpha = p.opacity;
+      ctx.font = `${p.size}px serif`;
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.fillText(p.emoji, -p.size / 2, p.size / 2);
+      ctx.restore();
+
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rot += p.rotV;
+      if (p.y < -30) { p.y = canvas.height + 20; p.x = Math.random() * canvas.width; }
+      if (p.x < -30) p.x = canvas.width + 10;
+      if (p.x > canvas.width + 30) p.x = -10;
+    });
+    requestAnimationFrame(drawParticles);
+  }
+  drawParticles();
+</script>
+</body>
+</html>
